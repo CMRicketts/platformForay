@@ -2,7 +2,7 @@ function love.load()
 
   WINDOW_HEIGHT = love.graphics.getHeight()
   WINDOW_WIDTH = love.graphics.getWidth()
-  GRAVITY = 100
+  GRAVITY = 75
 
   love.graphics.setNewFont(12)
   love.graphics.setColor(0,0,0)
@@ -10,7 +10,7 @@ function love.load()
 
   love.graphics.setColor(45, 45, 45)
   floor = {color = "", x1 = WINDOW_HEIGHT-50, y1 = 0, x2 = 0, y2 = WINDOW_WIDTH-50}
-  character = {outline = "line", x = 0, y = WINDOW_HEIGHT-10, width = 5, height = 10, speed = 200}
+  character = {outline = "line", x = 0, y = WINDOW_HEIGHT-10, width = 5, height = 100, speed = 200, yVel = 0}
 
   love.graphics.line(floor.x1, floor.y1, floor.x2, floor.y2)
 end
@@ -84,6 +84,7 @@ function moveCharacter(direction, dt)
     else 
       dy = 0 - character.speed * dt
     end]]
+    while character.y > 0 then end
     creatureJump(character, dt)
   end
   character.x = character.x + dx
@@ -96,17 +97,19 @@ end
 
 function creatureJump(creature, dt) 
   ground = WINDOW_HEIGHT - character.height
-  vel = 0
-  jumpHeight = 400
-  if vel == 0 then
-    vel = jumpHeight
+  print(ground, creature.y)
+  jumpHeight = 150
+  if creature.yVel == 0 then
+    print("vel = 0")
+    creature.yVel = jumpHeight
   end
-  if vel ~= 0 then 
-    creature.y = creature.y + vel * dt
-    vel = vel - GRAVITY * dt
+  if creature.yVel ~= 0 then 
+    print("should be going up?")
+    creature.y = creature.y - creature.yVel * dt
+    creature.yVel = creature.yVel + GRAVITY * dt
   end
   if creature.y > WINDOW_HEIGHT - creature.height then
-    vel = 0
+    creature.yVel = 0
     creature.y = WINDOW_HEIGHT - creature.height
   end
 end
@@ -125,4 +128,5 @@ function checkCollision(x, y)
 end
 
 
--- "C:\Program Files\LOVE\lovec.exe" "C:\Users\ricke\Desktop\code\lua\game"
+-- "C:\Program Files\LOVE\lovec.exe" "C:\Users\ricke\Desktop\code\lua\platformForay\game"
+-- "C:\Program Files\LOVE\lovec.exe" "C:\Users\Name\Desktop\code\lua\platformForay\game"
