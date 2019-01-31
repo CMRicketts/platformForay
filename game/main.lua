@@ -78,29 +78,38 @@ function moveCharacter(direction, dt)
       dy = character.speed * dt
     end
   elseif sec == "up" then
-    creatureJump(character, dt)
+    --[[
     if (character.y - character.speed * dt) <= 0 then
       character.y = 0
     else 
       dy = 0 - character.speed * dt
-    end
+    end]]
+    creatureJump(character, dt)
   end
   character.x = character.x + dx
   character.y = character.y + dy
-  factorGravity(character, dt)
 end
 
 function love.quit()
   print("Thanks for playing! Come back soon!")
 end
 
-function factorGravity(creature, dt)
-  if creature.y <= WINDOW_HEIGHT - character.height then
-    creature.y = creature.y + GRAVITY * dt
+function creatureJump(creature, dt) 
+  ground = WINDOW_HEIGHT - character.height
+  vel = 0
+  jumpHeight = 400
+  if vel == 0 then
+    vel = jumpHeight
+  end
+  if vel ~= 0 then 
+    creature.y = creature.y + vel * dt
+    vel = vel - GRAVITY * dt
+  end
+  if creature.y > WINDOW_HEIGHT - creature.height then
+    vel = 0
+    creature.y = WINDOW_HEIGHT - creature.height
   end
 end
-
-function creatureJump(creature, dt) 
 
 
 function checkCollision(x, y) 
