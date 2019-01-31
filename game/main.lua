@@ -2,17 +2,15 @@ function love.load()
 
   WINDOW_HEIGHT = love.graphics.getHeight()
   WINDOW_WIDTH = love.graphics.getWidth()
-  GRAVITY = 75
+  GRAVITY = 250
 
   love.graphics.setNewFont(12)
   love.graphics.setColor(0,0,0)
   love.graphics.setBackgroundColor(255,255,255)
 
   love.graphics.setColor(45, 45, 45)
-  floor = {color = "", x1 = WINDOW_HEIGHT-50, y1 = 0, x2 = 0, y2 = WINDOW_WIDTH-50}
-  character = {outline = "line", x = 0, y = WINDOW_HEIGHT-10, width = 5, height = 100, speed = 200, yVel = 0}
+  character = {outline = "fill", x = 0, y = WINDOW_HEIGHT-10, width = 5, height = 10, speed = 200, yVel = 0, jumpHeight = 150}
 
-  love.graphics.line(floor.x1, floor.y1, floor.x2, floor.y2)
 end
 
 function love.draw()
@@ -33,6 +31,10 @@ function love.update(dt)
     love.event.quit()
   end
 
+  if love.keyboard.isDown("r") then
+    love.event.quit("restart")
+  end
+
   direction = {"", ""}
   if love.keyboard.isDown("right") then
     direction[1] = "right"
@@ -41,23 +43,31 @@ function love.update(dt)
   else
     direction[1] = nil
   end
-
-  if love.keyboard.isDown("up") then
-    direction[2] = "up"
-  elseif love.keyboard.isDown("down") then
-    direction[2] = "down"
-  else
-    direction[2] = nil
-  end
   moveCharacter(direction, dt)
+  if love.keyboard.isDown("up") then
+    if character.yVel == 0 then
+      character.yVel = character.jumpHeight
+    end
+  end
+  if character.yVel ~= 0 then
+    print("going up by ", GRAVITY * dt)
+    print("going down by ", character.yVel * dt)
+    character.yVel = character.yVel - GRAVITY * dt
+    character.y = character.y - character.yVel * dt
+  end
+  if character.y >= WINDOW_HEIGHT - character.height then
+    character.yVel = 0
+    character.y = WINDOW_HEIGHT - character.height
+  end
+  if character.y <= 0 then
+    character.y = 0
+  end
 end
 
 
 function moveCharacter(direction, dt)
   first = direction[1]
-  sec = direction[2]
   dx = 0
-  dy = 0
   if first == "right" then
     if ((character.x + character.speed * dt) + character.width) >= WINDOW_WIDTH then
       character.x = WINDOW_WIDTH - character.width
@@ -71,31 +81,14 @@ function moveCharacter(direction, dt)
       dx = 0 - character.speed * dt
     end
   end
-  if sec == "down" then
-    if ((character.y + character.speed * dt) + character.height) >= WINDOW_HEIGHT then
-      character.y = WINDOW_HEIGHT - character.height
-    else 
-      dy = character.speed * dt
-    end
-  elseif sec == "up" then
-    --[[
-    if (character.y - character.speed * dt) <= 0 then
-      character.y = 0
-    else 
-      dy = 0 - character.speed * dt
-    end]]
-    while character.y > 0 then end
-    creatureJump(character, dt)
-  end
   character.x = character.x + dx
-  character.y = character.y + dy
 end
 
 function love.quit()
   print("Thanks for playing! Come back soon!")
 end
 
-function creatureJump(creature, dt) 
+--[[function creatureJump(creature, dt) 
   ground = WINDOW_HEIGHT - character.height
   print(ground, creature.y)
   jumpHeight = 150
@@ -125,7 +118,7 @@ function checkCollision(x, y)
   elseif y < 0 then
     y = 0
   end
-end
+end]]
 
 
 -- "C:\Program Files\LOVE\lovec.exe" "C:\Users\ricke\Desktop\code\lua\platformForay\game"
